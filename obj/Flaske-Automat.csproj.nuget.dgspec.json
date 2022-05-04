@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "restore": {
+    "/home/ltd/Workspace/School/threads/Flaske-Automat/Flaske-Automat.csproj": {}
+  },
+  "projects": {
+    "/home/ltd/Workspace/School/threads/Flaske-Automat/Flaske-Automat.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/home/ltd/Workspace/School/threads/Flaske-Automat/Flaske-Automat.csproj",
+        "projectName": "Flaske-Automat",
+        "projectPath": "/home/ltd/Workspace/School/threads/Flaske-Automat/Flaske-Automat.csproj",
+        "packagesPath": "/home/ltd/.nuget/packages/",
+        "outputPath": "/home/ltd/Workspace/School/threads/Flaske-Automat/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/ltd/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/nix/store/bbr88j9h3dmfg9147r3fha1zjdqj2v48-dotnet-sdk-6.0.202/sdk/6.0.202/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
