@@ -3,12 +3,14 @@ using System.Threading;
 
 namespace Flaske_Automat;
 class Program {
+    // Shared resources
     static Queue<Bottle> boxOfBottles = new Queue<Bottle>();
     static Queue<Bottle> beerBox = new Queue<Bottle>();
     static Queue<Bottle> sodaBox = new Queue<Bottle>();
     static Random random = new Random();
 
     static void Main(string[] args) {
+        // Creating, starting and stopping threads
         Thread produceBottles = new Thread(ProduceBottles);
         Thread sortBottles = new Thread(SortBottles);
         Thread consumeBeer = new Thread(ConsumeBeer);
@@ -28,24 +30,37 @@ class Program {
     public static void ProduceBottles() {
         while(true) {
             Monitor.Enter(boxOfBottles);
-            while(boxOfBottles.Count == 10) {
-                Monitor.Wait(boxOfBottles);
+            try {
+                // Check/wait if boxOfBottles is full
+                while(boxOfBottles.Count == 10) {
+                    Thread.Sleep(100/15);
+                    Monitor.Wait(boxOfBottles);
+                }
+
+                // Initiate new beer or soda depending on random number
+                switch(random.Next(0, 2)) {
+                    case 0:
+                        Bottle beer = new Beer();
+                        boxOfBottles.Enqueue(beer);
+
+                        Console.WriteLine($"PRODUCER: Has produced {beer.type}{beer.number}");
+                        break;
+                    default:
+                        Bottle soda = new Soda();
+                        boxOfBottles.Enqueue(soda);
+
+                        Console.WriteLine($"PRODUCER: Has produced {soda.type}{soda.number}");
+                        break;
+                }
+
+                // Notify threads: Update to boxOfBottles queue
+                Monitor.PulseAll(boxOfBottles);
+            }
+            finally {
+                Monitor.Exit(boxOfBottles);
             }
 
-            if(random.Next(0, 2) == 1) {
-                Bottle beer = new Beer();
-                boxOfBottles.Enqueue(beer);
-
-                Console.WriteLine($"Producer has produced beer{beer.bottleNumber}");
-            } else {
-                Bottle soda = new Soda();
-                boxOfBottles.Enqueue(soda);
-
-                Console.WriteLine($"Producer has produced soda{soda.bottleNumber}");
-            }
-
-            Monitor.PulseAll(boxOfBottles);
-            Monitor.Exit(boxOfBottles);
+            Thread.Sleep(500);
         }
     }
 
@@ -53,30 +68,51 @@ class Program {
     public static void SortBottles() {
         while(true) {
             Monitor.Enter(boxOfBottles);
-            while(boxOfBottles.Count == 0) {
-                Thread.Sleep(100/15);
-                Monitor.Wait(boxOfBottles);
+
+            try {
+                // Check/wait if no Bottles are in boxOfBottles
+                while(boxOfBottles.Count == 0) {
+                    Thread.Sleep(100/15);
+                    Monitor.Wait(boxOfBottles);
+                }
+
+                currentBottle = boxOfBottles.Dequeue();
+                switch(currentBottle.type) {
+                    case "Beer":
+                        Monitor.Enter(beerBox);
+
+                        try {
+                            // Put in beerBox if Bottle type == "Beer"
+                            beerBox.Enqueue(currentBottle);
+                            Console.WriteLine($"SORTER: Moved beer{currentBottle.number} to beerBox");
+
+                            // Notify threads: Update to beerBox queue
+                            Monitor.PulseAll(beerBox);
+                        } 
+                        finally {
+                            Monitor.Exit(beerBox);
+                        }
+                        break;
+                    case "Soda":
+                        Monitor.Enter(sodaBox);
+                        try {
+                            // Put in sodaBox if Bottle type == "Soda"
+                            sodaBox.Enqueue(currentBottle);
+                            Console.WriteLine($"SORTER: Moved soda{currentBottle.number} to sodaBox");
+
+                            // Notify threads: Update to sodaBox queue
+                            Monitor.PulseAll(sodaBox);
+                        }
+                        finally {
+                            Monitor.Exit(sodaBox);
+                        }
+                        break;
+                }
+            } 
+            finally {
+                Monitor.Exit(boxOfBottles);
             }
 
-            if(currentBottle.type == "Beer") {
-                Monitor.Enter(beerBox);
-                currentBottle = boxOfBottles.Dequeue();
-                beerBox.Enqueue(currentBottle);
-                Console.WriteLine($"Moved beer{currentBottle.bottleNumber} to beerBox");
-
-                Monitor.PulseAll(beerBox);
-                Monitor.Exit(beerBox);
-            } else {
-                Monitor.Enter(sodaBox);
-                currentBottle = boxOfBottles.Dequeue();
-                sodaBox.Enqueue(currentBottle);
-                Console.WriteLine($"Moved soda{currentBottle.bottleNumber} to sodaBox");
-
-                Monitor.PulseAll(sodaBox);
-                Monitor.Exit(sodaBox);
-            }
-
-            Monitor.Exit(boxOfBottles);
             Thread.Sleep(500);
         }
     }
@@ -87,14 +123,21 @@ class Program {
     public static void ConsumeBeer() {
         while(true) {
             Monitor.Enter(beerBox);
-            while(beerBox.Count == 0) {
-                Thread.Sleep(100/15);
-                Monitor.Wait(beerBox);
-            }
 
-            currentBeer = beerBox.Dequeue();
-            Console.WriteLine($" Jeff just drank {currentBeer.type}{currentBeer.bottleNumber}");
-            Monitor.Exit(beerBox);
+            try {
+                // Check/wait if no available beer
+                while(beerBox.Count == 0) {
+                    Thread.Sleep(100/15);
+                    Monitor.Wait(beerBox);
+                }
+
+                // Toss nearest beer and notify
+                currentBeer = beerBox.Dequeue();
+                Console.WriteLine($"JEFF: just drank {currentBeer.type}{currentBeer.number}");
+            }
+            finally {
+                Monitor.Exit(beerBox);
+            }
         }
     }
 
@@ -102,29 +145,36 @@ class Program {
     public static void ConsumeSoda() {
         while(true) {
             Monitor.Enter(sodaBox);
-            while(sodaBox.Count == 0) {
-                Thread.Sleep(100/15);
-                Monitor.Wait(sodaBox);
-            }
 
-            currentSoda = sodaBox.Dequeue();
-            Console.WriteLine($" Greg just drank {currentSoda.type}{currentSoda.bottleNumber}");
-            Monitor.Exit(sodaBox);
+            try {
+                // Check/wait if no available soda
+                while(sodaBox.Count == 0) {
+                    Thread.Sleep(100/15);
+                    Monitor.Wait(sodaBox);
+                }
+
+                // Toss nearest soda and notify
+                currentSoda = sodaBox.Dequeue();
+                Console.WriteLine($"Greg:  just drank {currentSoda.type}{currentSoda.number}");
+            }
+            finally {
+                Monitor.Exit(sodaBox);
+            }
         }
     }
 }
 
 
 // --- Bottles --- //
-public class Bottle {
+public abstract class Bottle {
     static int bottleCount;
 
-    internal int bottleNumber;
+    internal int number;
     internal string type;
 
     public Bottle(string type) {
         bottleCount++;
-        this.bottleNumber = bottleCount;
+        this.number = bottleCount;
         this.type = type;
     }
 }
