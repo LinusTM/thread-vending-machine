@@ -6,24 +6,23 @@ class Program {
     static Queue<Bottle> boxOfBottles = new Queue<Bottle>();
     static Queue<Bottle> beerBox = new Queue<Bottle>();
     static Queue<Bottle> sodaBox = new Queue<Bottle>();
-    static object _lock = new object();
     static Random random = new Random();
 
     static void Main(string[] args) {
-        Thread bottleProducer = new Thread(ProduceBottles);
-        Thread splitter = new Thread(SplitBottles);
-        Thread beerConsumer = new Thread(ConsumeBeer);
-        Thread sodaConsumer = new Thread(ConsumeSoda);
+        Thread produceBottles = new Thread(ProduceBottles);
+        Thread sortBottles = new Thread(SortBottles);
+        Thread consumeBeer = new Thread(ConsumeBeer);
+        Thread consumeSoda = new Thread(ConsumeSoda);
 
-        bottleProducer.Start();
-        splitter.Start();
-        beerConsumer.Start();
-        sodaConsumer.Start();
+        produceBottles.Start();
+        sortBottles.Start();
+        consumeBeer.Start();
+        consumeSoda.Start();
 
-        bottleProducer.Join();
-        splitter.Join();
-        beerConsumer.Join();
-        sodaConsumer.Join();
+        produceBottles.Join();
+        sortBottles.Join();
+        consumeBeer.Join();
+        consumeSoda.Join();
     }
 
     public static void ProduceBottles() {
@@ -47,29 +46,29 @@ class Program {
 
             Monitor.PulseAll(boxOfBottles);
             Monitor.Exit(boxOfBottles);
-
-
         }
     }
 
     static Bottle currentBottle = new Default();
-    public static void SplitBottles() {
+    public static void SortBottles() {
         while(true) {
             Monitor.Enter(boxOfBottles);
             while(boxOfBottles.Count == 0) {
+                Thread.Sleep(100/15);
                 Monitor.Wait(boxOfBottles);
             }
 
-            Monitor.Enter(beerBox);
-            Monitor.Enter(sodaBox);
-            currentBottle = boxOfBottles.Dequeue();
             if(currentBottle.type == "Beer") {
+                Monitor.Enter(beerBox);
+                currentBottle = boxOfBottles.Dequeue();
                 beerBox.Enqueue(currentBottle);
                 Console.WriteLine($"Moved beer{currentBottle.bottleNumber} to beerBox");
 
                 Monitor.PulseAll(beerBox);
                 Monitor.Exit(beerBox);
             } else {
+                Monitor.Enter(sodaBox);
+                currentBottle = boxOfBottles.Dequeue();
                 sodaBox.Enqueue(currentBottle);
                 Console.WriteLine($"Moved soda{currentBottle.bottleNumber} to sodaBox");
 
@@ -77,9 +76,8 @@ class Program {
                 Monitor.Exit(sodaBox);
             }
 
-
             Monitor.Exit(boxOfBottles);
-            Thread.Sleep(1000);
+            Thread.Sleep(500);
         }
     }
 
@@ -90,11 +88,12 @@ class Program {
         while(true) {
             Monitor.Enter(beerBox);
             while(beerBox.Count == 0) {
+                Thread.Sleep(100/15);
                 Monitor.Wait(beerBox);
             }
 
             currentBeer = beerBox.Dequeue();
-            Console.WriteLine($" Jeff just drank beer {currentBeer.type}{currentBeer.bottleNumber}");
+            Console.WriteLine($" Jeff just drank {currentBeer.type}{currentBeer.bottleNumber}");
             Monitor.Exit(beerBox);
         }
     }
@@ -104,11 +103,12 @@ class Program {
         while(true) {
             Monitor.Enter(sodaBox);
             while(sodaBox.Count == 0) {
+                Thread.Sleep(100/15);
                 Monitor.Wait(sodaBox);
             }
 
             currentSoda = sodaBox.Dequeue();
-            Console.WriteLine($" Greg just drank soda {currentSoda.type}{currentSoda.bottleNumber}");
+            Console.WriteLine($" Greg just drank {currentSoda.type}{currentSoda.bottleNumber}");
             Monitor.Exit(sodaBox);
         }
     }

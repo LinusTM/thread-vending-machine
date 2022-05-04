@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "HzGK+bWqy3InQ5Fz2KhNoDee1hf7BpaKDw3tVAsh0J+qIQ6Oq+UNMS2ng0ZjCff9IV776HcOWX4G7r3b3dPCHg==",
+  "dgSpecHash": "3IbxqaX9tR7nNPAmOHmkbkMMDzF5M7eexeabiMSOH+N3FZBjtc0JpyNEiJpaOjJvHxd01/Ciqmmneh+WOt5+ww==",
   "success": true,
-  "projectFilePath": "/home/ltd/Workspace/School/threads/Flaske-Automat/Flaske-Automat.csproj",
+  "projectFilePath": "/home/ltd/Workspace/School/threads/thread-vending-machine/Flaske-Automat.csproj",
   "expectedPackageFiles": [],
   "logs": []
 }

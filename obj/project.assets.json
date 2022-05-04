@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "/home/ltd/Workspace/School/threads/Flaske-Automat/Flaske-Automat.csproj",
+      "projectUniqueName": "/home/ltd/Workspace/School/threads/thread-vending-machine/Flaske-Automat.csproj",
       "projectName": "Flaske-Automat",
-      "projectPath": "/home/ltd/Workspace/School/threads/Flaske-Automat/Flaske-Automat.csproj",
+      "projectPath": "/home/ltd/Workspace/School/threads/thread-vending-machine/Flaske-Automat.csproj",
       "packagesPath": "/home/ltd/.nuget/packages/",
-      "outputPath": "/home/ltd/Workspace/School/threads/Flaske-Automat/obj/",
+      "outputPath": "/home/ltd/Workspace/School/threads/thread-vending-machine/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "/home/ltd/.nuget/NuGet/NuGet.Config"
