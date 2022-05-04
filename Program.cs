@@ -74,7 +74,7 @@ class Program {
                 Console.WriteLine($"Moved soda{currentBottle.bottleNumber} to sodaBox");
 
                 Monitor.PulseAll(sodaBox);
-                Monitor.Exit(beerBox);
+                Monitor.Exit(sodaBox);
             }
 
 
