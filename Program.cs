@@ -155,7 +155,7 @@ class Program {
 
                 // Toss nearest soda and notify
                 currentSoda = sodaBox.Dequeue();
-                Console.WriteLine($"Greg:  just drank {currentSoda.type}{currentSoda.number}");
+                Console.WriteLine($"GREG: just drank {currentSoda.type}{currentSoda.number}");
             }
             finally {
                 Monitor.Exit(sodaBox);
